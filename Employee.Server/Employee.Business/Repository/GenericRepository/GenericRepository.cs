@@ -5,33 +5,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Employee.Business.Repository.GenericRepository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly EmployeeDbContext _context;
-        public GenericRepository(EmployeeDbContext context)
+        public readonly ILogger _logger;
+        public GenericRepository(EmployeeDbContext context, ILogger logger)
         {
             this._context = context;
+            this._logger = logger;
         }
         public ICollection<T> GetAll()
         {
+            _logger.LogInformation("GetAll");
             return _context.Set<T>().ToList();
         }
 
         public async Task<ICollection<T>> GetAllAsync()
         {
+            _logger.LogInformation("GetAllAsync");
             return await _context.Set<T>().ToListAsync();
         }
 
         public T GetById(long id)
         {
+            _logger.LogInformation("GetById");
             return _context.Set<T>().Find(id);
         }
 
         public async Task<T> GetByIdAsync(long id)
         {
+            _logger.LogInformation("GetByIdAsync");
             return await _context.Set<T>().FindAsync(id);
         }
 
@@ -67,6 +74,7 @@ namespace Employee.Business.Repository.GenericRepository
 
         public T Add(T entity)
         {
+            _logger.LogInformation("Add");
             _context.Set<T>().Add(entity);
             _context.SaveChanges();
             return entity;
@@ -74,6 +82,7 @@ namespace Employee.Business.Repository.GenericRepository
 
         public async Task<T> AddAsync(T entity)
         {
+            _logger.LogInformation("AddAsync");
             _context.Set<T>().Add(entity);
             await _context.SaveChangesAsync();
             return entity;
@@ -81,6 +90,7 @@ namespace Employee.Business.Repository.GenericRepository
 
         public T Update(object key, T entity)
         {
+            _logger.LogInformation("Update");
             if (entity == null)
             {
                 return null;
@@ -95,6 +105,7 @@ namespace Employee.Business.Repository.GenericRepository
 
         public async Task<T> UpdateAsync(object key, T entity)
         {
+            _logger.LogInformation("UpdateAsync");
             if (entity == null)
                 return null;
             T exist = await _context.Set<T>().FindAsync(key);

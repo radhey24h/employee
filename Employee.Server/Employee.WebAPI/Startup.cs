@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Employee.Business.Repository.EmployeeDetailsRepository;
 using Employee.Business.Services.EmployeeDetailsServices;
 using System.Text.Json.Serialization;
+using Employee.Business.Configuration;
 
 namespace Employee.WebAPI
 {
@@ -30,6 +31,8 @@ namespace Employee.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
             services.AddControllers();
             services.AddDbContext<EmployeeDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -37,6 +40,8 @@ namespace Employee.WebAPI
 
             services.AddScoped<IEmployeeDetailsRepository, EmployeeDetailsRepository>();
             services.AddScoped<IEmployeeDetailsServices, EmployeeDetailsServices>();
+
+            services.AddSingleton(typeof(ILogger), typeof(Logger<Startup>));
 
             services.AddControllers().AddNewtonsoftJson();
 

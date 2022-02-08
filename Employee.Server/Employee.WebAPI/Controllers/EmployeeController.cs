@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Employee.Entity.Entities;
 using Microsoft.Extensions.Logging;
+using Employee.Business.Configuration;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,11 +18,14 @@ namespace Employee.WebAPI.Controllers
     {
 
         private readonly IEmployeeDetailsServices _employeeDetailsServices;
+        private readonly IUnitOfWork _unitOfWork;
+
         private readonly IConfiguration _configuration;
         private readonly ILogger<EmployeeController> _logger;
 
-        public EmployeeController(IEmployeeDetailsServices employeeDetailsServices, IConfiguration configuration, ILogger<EmployeeController> logger)
+        public EmployeeController(IUnitOfWork unitOfWork, IEmployeeDetailsServices employeeDetailsServices, IConfiguration configuration, ILogger<EmployeeController> logger)
         {
+            this._unitOfWork = unitOfWork;
             this._employeeDetailsServices = employeeDetailsServices;
             this._configuration = configuration;
             this._logger = logger;
@@ -30,7 +34,7 @@ namespace Employee.WebAPI.Controllers
         public async Task<IActionResult> GetEmployees()
         {
             _logger.LogInformation("GetEmployees");
-            var results = await _employeeDetailsServices.GetEmployeesAsync();
+            var results = await _unitOfWork.EmployeeDetails.GetAllAsync();
             if (results == null)
                 return BadRequest();
 
